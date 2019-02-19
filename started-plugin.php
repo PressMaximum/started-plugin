@@ -58,5 +58,5 @@ function started_plugin() {
 add_action( 'plugins_loaded', 'started_plugin_init', 2 );
 function started_plugin_init() {
 	// Bootstrap.
-	$GLOBALS['started_plugin'] = started_plugin();
+	$GLOBALS['started-plugin'] = started_plugin();
 }

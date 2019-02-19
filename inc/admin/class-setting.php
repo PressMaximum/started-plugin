@@ -1,19 +1,12 @@
 <?php
 class Started_Plugin_Setting {
 	/**
-	 * The option page slug.
-	 *
-	 * @var Started_Plugin_Setting_Menu_Slug
-	 * @since 0.1.0
-	 */
-	protected $menu_slugs = '';
-	/**
 	 * The option key in database.
 	 *
 	 * @var Started_Plugin_Setting_Option_Key
 	 * @since 0.1.0
 	 */
-	protected $option_key = 'started_plugin';
+	protected $option_key = 'started_plugin_settings';
 
 	/**
 	 * The option configs.
@@ -26,10 +19,42 @@ class Started_Plugin_Setting {
 	/**
 	 * The setting tabs.
 	 *
-	 * @var Started_Plugin_tabs
+	 * @var Started_Plugin_Tabs
 	 * @since 0.1.0
 	 */
 	protected $tabs = array();
+
+	/**
+	 * The current tab.
+	 *
+	 * @var Started_Plugin_Current_Tab
+	 * @since 0.1.0
+	 */
+	protected $current_tab = array();
+
+	/**
+	 * The current section.
+	 *
+	 * @var Started_Plugin_Current_Section
+	 * @since 0.1.0
+	 */
+	protected $current_section = array();
+
+	/**
+	 * The current page slug.
+	 *
+	 * @var Started_Plugin_Current_Page_Slug
+	 * @since 0.1.0
+	 */
+	protected $current_page_slug = array();
+
+	/**
+	 * The menu pages.
+	 *
+	 * @var Started_Plugin_Menu_Pages
+	 * @since 0.1.0
+	 */
+	protected $menu_pages = array();
 
 	/**
 	 * The single instance of the class.
@@ -43,13 +68,55 @@ class Started_Plugin_Setting {
 	 */
 	public function __construct() {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ), 90 );
-		add_action( 'cmb2_admin_init', array( $this, 'admin_init' ) );
+		add_action( 'cmb2_admin_init', array( $this, 'register_db_settings' ), 10 );
+		add_action( 'admin_init', array( $this, 'admin_init' ), 1 );
 	}
 	/**
 	 * Hook to cmb2_admin_init
 	 */
-	public function admin_init() {
+	public function register_db_settings() {
 		register_setting( $this->option_key, $this->option_key );
+	}
+
+	/**
+	 * Admin init
+	 *
+	 * @return void
+	 */
+	public function admin_init() {
+		if ( isset( $_GET['tab'] ) && sanitize_text_field( $_GET['tab'] ) !== '' ) {
+			$this->current_tab = $this->option_configs[ sanitize_text_field( $_GET['tab'] ) ];
+		} else {
+			$this->current_tab = $this->option_configs[ key( $this->tabs ) ];
+		}
+		$current_tab = $this->current_tab;
+		if ( isset( $current_tab['sub_tabs'] ) && ! empty( $current_tab['sub_tabs'] ) ) {
+			if ( isset( $_GET['section'] ) && sanitize_text_field( $_GET['section'] ) !== '' ) {
+				$this->current_section = $current_tab['sub_tabs'][ sanitize_text_field( $_GET['section'] ) ];
+			} else {
+				$this->current_section = $current_tab['sub_tabs'][ key( $current_tab['sub_tabs'] ) ];
+			}
+		}
+
+		$current_admin_slug = '';
+		if ( isset( $_GET['page'] ) && in_array( sanitize_text_field( $_GET['page'] ), $this->get_available_menu_slugs() ) ) {
+			$current_admin_slug = sanitize_text_field( $_GET['page'] );
+		}
+		$this->current_page_slug = $current_admin_slug;
+	}
+	/**
+	 * Get all registered menu slugs
+	 *
+	 * @return array
+	 */
+	public function get_available_menu_slugs() {
+		$menu_slug = array();
+		foreach ( $this->menu_pages as $menu ) {
+			if ( isset( $menu['menu_slug'] ) && '' !== $menu['menu_slug'] ) {
+				$menu_slug[] = $menu['menu_slug'];
+			}
+		}
+		return $menu_slug;
 	}
 
 	/**
@@ -68,8 +135,97 @@ class Started_Plugin_Setting {
 	 * Add menu setting page
 	 */
 	public function add_menu_pages() {
-		add_menu_page( esc_html__( 'Started Plugin', 'started-plugin' ), esc_html__( 'Started Plugin', 'started-plugin' ), 'manage_options', 'started-plugin', array( $this, 'page_content' ) );
-		// add_submenu_page( 'started-plugin', esc_html__( 'Settings', 'started-plugin' ), esc_html__( 'Settings', 'started-plugin' ), 'manage_options', 'started-plugin', array( $this, 'page_content' ) ); .
+		foreach ( $this->menu_pages as $menu_page ) {
+			$default = array(
+				'page_title' => '',
+				'menu_title' => '',
+				'capability' => 'manage_options',
+				'menu_slug'  => '',
+				'parent_slug' => '',
+				'icon_url'   => '',
+				'position'   => null,
+			);
+			$args = wp_parse_args( $menu_page, $default );
+			if ( is_null( $args['parent_slug'] ) || '' == $args['parent_slug'] ) {
+				add_menu_page( $args['page_title'], $args['menu_title'], $args['capability'], $args['menu_slug'], array( $this, 'page_content' ), $args['icon_url'], $args['position'] );
+			} else {
+				add_submenu_page( $args['parent_slug'], $args['page_title'], $args['menu_title'], $args['capability'], $args['menu_slug'], array( $this, 'page_content' ) );
+			}
+		}
+	}
+
+	public function add_settings_page( $args ) {
+		$this->menu_pages[] = $args;
+	}
+
+	public function render_tabs() {
+		$current_tab = $this->current_tab;
+		if ( is_array( $this->tabs ) && ! empty( $this->tabs ) ) {
+			?>
+			<nav class="nav-tab-wrapper">
+				<?php
+				foreach ( $this->tabs as $tab_config ) {
+					$tab_url = add_query_arg( array( 'tab' => $tab_config['tab_id'] ), menu_page_url( $this->current_page_slug, false ) );
+					$extra_class = '';
+					if ( $current_tab['id'] == $tab_config['tab_id'] ) {
+						$extra_class = ' nav-tab-active';
+					}
+					?>
+					<a href="<?php echo esc_url( $tab_url ); ?>" id="<?php echo esc_attr( $tab_config['tab_id'] ); ?>" class="nav-tab<?php echo esc_attr( $extra_class ); ?>"><?php echo esc_html( $tab_config['tab_title'] ); ?></a>
+					<?php
+				}
+				?>
+			</nav>
+			<?php
+		}
+	}
+
+	public function render_sub_tab() {
+		$all_tabs = $this->tabs;
+		$current_tab = $this->current_tab;
+		$current_section = $this->current_section;
+		if ( isset( $all_tabs[ $current_tab['id'] ]['sub_tabs'] ) && ! empty( $all_tabs[ $current_tab['id'] ]['sub_tabs'] ) ) {
+			$current_sub_tabs = $all_tabs[ $current_tab['id'] ]['sub_tabs'];
+			?>
+			<ul class="nav-sub-tabs list-sub-tabs">
+				<?php
+				$count_sub = 1;
+				foreach ( $current_sub_tabs as $sub_tab ) {
+					$sub_tab_url = add_query_arg(
+						array(
+							'tab' => $current_tab['id'],
+							'section' => $sub_tab['tab_id'],
+						),
+						menu_page_url( $this->current_page_slug, false )
+					);
+					$section_active_class = '';
+					if ( $current_section['id'] == $sub_tab['tab_id'] ) {
+						$section_active_class = ' current-section';
+					}
+					?>
+					<li>
+						<a class="nav-sub-tab<?php echo esc_attr( $section_active_class ); ?>" href="<?php echo esc_url( $sub_tab_url ); ?>"><?php echo esc_html( $sub_tab['tab_title'] ); ?></a>
+						<?php if ( $count_sub < count( $current_sub_tabs ) ) { ?>
+							<span class="subtab-separator"><?php echo esc_html__( ' | ', 'started-plugin' ); ?></span>
+						<?php } ?>
+					</li>
+					<?php
+					$count_sub++;
+				}
+				?>
+			</ul>
+			<?php
+		}
+	}
+
+	public function render_form_content() {
+		?>
+		<div class="form-content">
+			<?php
+			cmb2_metabox_form( $this->option_metabox(), $this->option_key );
+			?>
+		</div>
+		<?php
 	}
 
 	/**
@@ -79,115 +235,29 @@ class Started_Plugin_Setting {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<?php if ( is_array( $this->tabs ) && ! empty( $this->tabs ) ) { ?>
-				<?php
-				if ( isset( $_GET['tab'] ) && sanitize_text_field( $_GET['tab'] ) !== '' ) {
-					$current_tab_id = sanitize_text_field( $_GET['tab'] );
-				} else {
-					$current_tab_id = $this->tabs[ key( $this->tabs ) ]['tab_id'];
-				}
-				?>
-					<nav class="nav-tab-wrapper">
-						<?php
-						foreach ( $this->tabs as $tab_config ) {
-							$tab_url = add_query_arg( array( 'tab' => $tab_config['tab_id'] ), menu_page_url( 'started-plugin', false ) );
-							$extra_class = '';
-							if ( $current_tab_id == $tab_config['tab_id'] ) {
-								$extra_class = ' nav-tab-active';
-							}
-							?>
-							<a href="<?php echo esc_url( $tab_url ); ?>" id="<?php echo esc_attr( $tab_config['tab_id'] ); ?>" class="nav-tab<?php echo esc_attr( $extra_class ); ?>"><?php echo esc_html( $tab_config['tab_title'] ); ?></a>
-							<?php
-						}
-						?>
-					</nav>
-					<?php
-					if ( isset( $this->tabs[ $current_tab_id ]['sub_tabs'] ) && ! empty( $this->tabs[ $current_tab_id ]['sub_tabs'] ) ) {
-						?>
-						<ul class="nav-sub-tabs list-sub-tabs">
-							<?php
-							if ( isset( $_GET['section'] ) && sanitize_text_field( $_GET['section'] ) !== '' ) {
-								$current_section_id = sanitize_text_field( $_GET['section'] );
-							} else {
-								$current_section_id = $this->tabs[ $current_tab_id ]['sub_tabs'][ key( $this->tabs[ $current_tab_id ]['sub_tabs'] ) ]['tab_id'];
-							}
-							$count_sub = 1;
-							foreach ( $this->tabs[ $current_tab_id ]['sub_tabs'] as $sub_tab ) {
-								$sub_tab_url = add_query_arg(
-									array(
-										'tab' => $current_tab_id,
-										'section' => $sub_tab['tab_id'],
-									),
-									menu_page_url( 'started-plugin', false )
-								);
-								$section_active_class = '';
-								if ( $current_section_id == $sub_tab['tab_id'] ) {
-									$section_active_class = ' current-section';
-								}
-								?>
-								<li>
-									<a class="nav-sub-tab<?php echo esc_attr( $section_active_class ); ?>" href="<?php echo esc_url( $sub_tab_url ); ?>"><?php echo esc_html( $sub_tab['tab_title'] ); ?></a>
-									<?php if ( $count_sub < count( $this->tabs[ $current_tab_id ]['sub_tabs'] ) ) { ?>
-										<span class="subtab-separator"><?php echo esc_html__( ' | ', 'started-plugin' ); ?></span>
-									<?php } ?>
-								</li>
-								<?php
-								$count_sub++;
-							}
-							?>
-						</ul>
-						<?php
-					}
-
-					if ( isset( $this->option_configs[ $current_tab_id ] ) ) {
-						$current_form_fields = $this->get_current_form_fields( $current_tab_id, $current_section_id );
-						if ( ! empty( $current_form_fields ) ) {
-							?>
-							<div class="form-content">
-								<?php
-								cmb2_metabox_form( $this->option_metabox( $current_form_fields ), $this->option_key );
-								?>
-							</div>
-							<?php
-						}
-					}
-
-					?>
-			<?php } ?>
+			<?php $this->render_tabs(); ?>
+			<?php $this->render_sub_tab(); ?>
+			<?php $this->render_form_content(); ?>
+			<div class="clear"></div>
 		</div>
-		<div class="clear"></div>
 		<?php
-	}
-	/**
-	 * Get form field config of current tab
-	 *
-	 * @param [string] $current_tab_id
-	 * @param [string] $current_section_id
-	 * @return array
-	 */
-	public function get_current_form_fields( $current_tab_id, $current_section_id ) {
-		$current_configs = $this->option_configs[ $current_tab_id ];
-		$current_form_fields = array();
-		if ( isset( $current_configs['sub_tabs'] ) && ! empty( $current_configs['sub_tabs'] ) ) {
-			if ( isset( $current_configs['sub_tabs'][ $current_section_id ] ) && ! empty( $current_configs['sub_tabs'][ $current_section_id ] ) ) {
-				$current_section_config = $current_configs['sub_tabs'][ $current_section_id ];
-				if ( isset( $current_section_config['fields'] ) && ! empty( $current_section_config['fields'] ) ) {
-					$current_form_fields = $current_section_config['fields'];
-				}
-			}
-		} elseif ( isset( $current_configs['fields'] ) && ! empty( $current_configs['fields'] ) ) {
-			$current_form_fields = $current_configs['fields'];
-		}
-		return $current_form_fields;
 	}
 
 	/**
 	 * Set option config for cmb2 form
 	 *
-	 * @param [array] $fields
 	 * @return array
 	 */
-	public function option_metabox( $fields ) {
+	public function option_metabox() {
+		$current_tab = $this->current_tab;
+		$current_section = $this->current_section;
+		$current_section_id = $current_section['id'];
+		$fields = array();
+		if ( isset( $current_section_id ) && '' !== $current_section_id && in_array( $current_section_id, array_keys( $current_tab['sub_tabs'] ) ) ) {
+			$fields = $current_section['fields'];
+		} else if ( isset( $current_tab['fields'] ) && ! empty( $current_tab['fields'] ) ) {
+			$fields = $current_tab['fields'];
+		}
 		return array(
 			'id'         => 'form_settings',
 			'show_on'    => array(
@@ -204,12 +274,14 @@ class Started_Plugin_Setting {
 	 *
 	 * @param [string] $tab_id
 	 * @param [string] $tab_title
+	 * @param [string] $menu_slug
 	 * @return void
 	 */
-	public function register_tab( $tab_id, $tab_title ) {
+	public function register_tab( $tab_id, $tab_title, $menu_slug = '' ) {
 		$this->tabs[ $tab_id ] = array(
-			'tab_id' => sanitize_text_field( $tab_id ),
+			'tab_id'    => sanitize_text_field( $tab_id ),
 			'tab_title' => $tab_title,
+			'menu_slug' => $menu_slug,
 		);
 	}
 	/**
@@ -355,6 +427,7 @@ class Started_Plugin_Setting {
 			return isset( $options[ $setting_key ] ) ? $options[ $setting_key ] : $default_value;
 		}
 	}
+
 
 }
 
