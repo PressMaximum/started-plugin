@@ -40,7 +40,7 @@ if ( ! class_exists( 'CMB2' ) ) {
 }
 
 // Include files.
-require_once STARTED_PLUGIN_DIR . 'inc/admin/class-options.php';
+require_once STARTED_PLUGIN_DIR . 'inc/admin/class-setting.php';
 require_once STARTED_PLUGIN_DIR . 'inc/class-started-plugin.php';
 
 /**
