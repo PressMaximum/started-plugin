@@ -9,6 +9,24 @@ $started_plugin_setting->add_settings_page(
 	)
 );
 
+$started_plugin_setting->add_settings_page(
+	array(
+		'menu_slug' => 'started-plugin-01',
+		'parent_slug' => 'started-plugin-page',
+		'page_title' => esc_html__( 'Page 01', 'started-plugin' ),
+		'menu_title' => esc_html__( 'Started Page 01', 'started-plugin' ),
+	)
+);
+
+$started_plugin_setting->add_settings_page(
+	array(
+		'menu_slug' => 'started-plugin-02',
+		'parent_slug' => 'started-plugin-page',
+		'page_title' => esc_html__( 'Page 02', 'started-plugin' ),
+		'menu_title' => esc_html__( 'Started Page 02', 'started-plugin' ),
+	)
+);
+
 $started_plugin_setting->register_tab( 'general_settings', esc_html__( 'General', 'started-plugin' ), 'started-plugin-page' );
 $started_plugin_setting->register_tab( 'products_settings', esc_html__( 'Products', 'started-plugin' ), 'started-plugin-page' );
 $started_plugin_setting->register_tab( 'shipping_settings', esc_html__( 'Shipping', 'started-plugin' ), 'started-plugin-page' );

@@ -218,7 +218,25 @@ class Started_Plugin_Setting {
 		}
 	}
 
+	public function check_target_page() {
+		$all_tabs = $this->tabs;
+		$current_page_slug = $this->current_page_slug;
+		$current_tab = $this->current_tab;
+		$current_tab_id = $current_tab['id'];
+		$tab_menu_slug = $all_tabs[ $current_tab_id ]['menu_slug'];
+		if ( $current_page_slug !== $tab_menu_slug ) {
+			return false;
+		}
+		return true;
+	}
+
 	public function render_form_content() {
+		$target_page = $this->check_target_page();
+		if ( ! $target_page ) {
+			return;
+		}
+		$this->render_tabs();
+		$this->render_sub_tab();
 		?>
 		<div class="form-content">
 			<?php
@@ -235,8 +253,6 @@ class Started_Plugin_Setting {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<?php $this->render_tabs(); ?>
-			<?php $this->render_sub_tab(); ?>
 			<?php $this->render_form_content(); ?>
 			<div class="clear"></div>
 		</div>
@@ -255,7 +271,7 @@ class Started_Plugin_Setting {
 		$fields = array();
 		if ( isset( $current_section_id ) && '' !== $current_section_id && in_array( $current_section_id, array_keys( $current_tab['sub_tabs'] ) ) ) {
 			$fields = $current_section['fields'];
-		} else if ( isset( $current_tab['fields'] ) && ! empty( $current_tab['fields'] ) ) {
+		} elseif ( isset( $current_tab['fields'] ) && ! empty( $current_tab['fields'] ) ) {
 			$fields = $current_tab['fields'];
 		}
 		return array(
