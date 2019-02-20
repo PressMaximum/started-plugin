@@ -9,12 +9,28 @@ class Started_Plugin_Setting {
 	protected $option_key = 'started_plugin_settings';
 
 	/**
+	 * The metabox prefix.
+	 *
+	 * @var Started_Plugin_Setting_Metabox_Prefix
+	 * @since 0.1.0
+	 */
+	protected $metabox_prefix = '_started_plugin_';
+
+	/**
 	 * The option configs.
 	 *
 	 * @var Started_Plugin_Setting_Option_Configs
 	 * @since 0.1.0
 	 */
 	protected $option_configs = array();
+
+	/**
+	 * The metabox configs.
+	 *
+	 * @var Started_Plugin_Setting_Metabox_Configs
+	 * @since 0.1.0
+	 */
+	protected $metabox_configs = array();
 
 	/**
 	 * The setting tabs.
@@ -57,6 +73,14 @@ class Started_Plugin_Setting {
 	protected $menu_pages = array();
 
 	/**
+	 * The setting fields.
+	 *
+	 * @var Started_Plugin_Setting_Fields
+	 * @since 0.1.0
+	 */
+	protected $setting_fields = array();
+
+	/**
 	 * The single instance of the class.
 	 *
 	 * @var Started_Plugin_Setting_Instance
@@ -70,12 +94,36 @@ class Started_Plugin_Setting {
 		add_action( 'admin_menu', array( $this, 'add_menu_pages' ), 90 );
 		add_action( 'cmb2_admin_init', array( $this, 'register_db_settings' ), 10 );
 		add_action( 'admin_init', array( $this, 'admin_init' ), 1 );
+
+		add_action(
+			'init',
+			function() {
+				$this->get_post_meta();
+			}
+		);
 	}
 	/**
 	 * Hook to cmb2_admin_init
 	 */
 	public function register_db_settings() {
 		register_setting( $this->option_key, $this->option_key );
+
+		if ( is_array( $this->metabox_configs ) && ! empty( $this->metabox_configs ) ) {
+			$metabox_configs = apply_filters( 'started_plugin_register_metabox', $this->metabox_configs );
+			foreach ( $metabox_configs as $config ) {
+				$default_args = array(
+					'id'            => $this->metabox_prefix . 'metabox',
+					'title'         => esc_html__( 'Metabox', 'started-plugin' ),
+					'object_types'  => array( 'post', 'page' ),
+				);
+				$args = wp_parse_args( $config['args'], $default_args );
+				$meta_box = new_cmb2_box( $args );
+				foreach ( $config['fields'] as $field ) {
+					$field['id'] = $this->metabox_prefix . $field['id'];
+					$meta_box->add_field( $field );
+				}
+			}
+		}
 	}
 
 	/**
@@ -84,10 +132,24 @@ class Started_Plugin_Setting {
 	 * @return void
 	 */
 	public function admin_init() {
+		$current_admin_slug = '';
+		if ( isset( $_GET['page'] ) && in_array( sanitize_text_field( $_GET['page'] ), $this->get_available_menu_slugs() ) ) {
+			$current_admin_slug = sanitize_text_field( $_GET['page'] );
+		}
+		$this->current_page_slug = $current_admin_slug;
 		if ( isset( $_GET['tab'] ) && sanitize_text_field( $_GET['tab'] ) !== '' ) {
 			$this->current_tab = $this->option_configs[ sanitize_text_field( $_GET['tab'] ) ];
 		} else {
-			$this->current_tab = $this->option_configs[ key( $this->tabs ) ];
+			$current_tab_val = array();
+			if ( is_array( $this->tabs ) && ! empty( $this->tabs ) ) {
+				foreach ( $this->tabs as $tab ) {
+					if ( $tab['menu_slug'] == $this->current_page_slug ) {
+						$current_tab_val = $this->option_configs[ $tab['tab_id'] ];
+						break;
+					}
+				}
+			}
+			$this->current_tab = $current_tab_val;
 		}
 		$current_tab = $this->current_tab;
 		if ( isset( $current_tab['sub_tabs'] ) && ! empty( $current_tab['sub_tabs'] ) ) {
@@ -97,12 +159,6 @@ class Started_Plugin_Setting {
 				$this->current_section = $current_tab['sub_tabs'][ key( $current_tab['sub_tabs'] ) ];
 			}
 		}
-
-		$current_admin_slug = '';
-		if ( isset( $_GET['page'] ) && in_array( sanitize_text_field( $_GET['page'] ), $this->get_available_menu_slugs() ) ) {
-			$current_admin_slug = sanitize_text_field( $_GET['page'] );
-		}
-		$this->current_page_slug = $current_admin_slug;
 	}
 	/**
 	 * Get all registered menu slugs
@@ -165,6 +221,9 @@ class Started_Plugin_Setting {
 			<nav class="nav-tab-wrapper">
 				<?php
 				foreach ( $this->tabs as $tab_config ) {
+					if ( $tab_config['menu_slug'] !== $this->current_page_slug ) {
+						continue;
+					}
 					$tab_url = add_query_arg( array( 'tab' => $tab_config['tab_id'] ), menu_page_url( $this->current_page_slug, false ) );
 					$extra_class = '';
 					if ( $current_tab['id'] == $tab_config['tab_id'] ) {
@@ -246,6 +305,27 @@ class Started_Plugin_Setting {
 		<?php
 	}
 
+	public function render_form_notab_content() {
+		$setting_fields = $this->setting_fields[ $this->current_page_slug ]['fields'];
+		$setting_fields = apply_filters( 'started_plugin_form_notab_fields', $setting_fields, $this->setting_fields, $this->current_page_slug );
+		$form_args = array(
+			'id'         => 'form_settings',
+			'show_on'    => array(
+				'key' => 'options-page',
+				'value' => array( $this->option_key ),
+			),
+			'show_names' => true,
+			'fields'     => $setting_fields,
+		);
+		?>
+		<div class="form-content">
+			<?php
+			cmb2_metabox_form( $form_args, $this->option_key );
+			?>
+		</div>
+		<?php
+	}
+
 	/**
 	 * Render setting page content
 	 */
@@ -253,7 +333,13 @@ class Started_Plugin_Setting {
 		?>
 		<div class="wrap">
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<?php $this->render_form_content(); ?>
+			<?php
+			if ( array_key_exists( $this->current_page_slug, $this->setting_fields ) ) {
+				$this->render_form_notab_content();
+			} else {
+				$this->render_form_content();
+			}
+			?>
 			<div class="clear"></div>
 		</div>
 		<?php
@@ -333,6 +419,31 @@ class Started_Plugin_Setting {
 				$this->option_configs[ $tab_id ] = array(
 					'id' => $tab_id,
 					'fields' => $fields,
+				);
+			}
+		}
+	}
+
+	public function set_setting_fields( $menu_slug, $fields ) {
+		$this->setting_fields[ $menu_slug ] = array(
+			'menu_slug' => $menu_slug,
+			'fields'    => $fields,
+		);
+	}
+
+	public function set_tab_field( $tab_id, $field ) {
+		if ( '' !== $tab_id && is_array( $field ) && ! empty( $field ) ) {
+			$fields = apply_filters( 'started_plugin_set_tab_field', $field, $tab_id );
+			if ( isset( $this->option_configs[ $tab_id ] ) && isset( $this->option_configs[ $tab_id ]['fields'] ) ) {
+				$exists_fields = $this->option_configs[ $tab_id ]['fields'];
+				$exists_fields[] = $field;
+				$this->option_configs[ $tab_id ]['fields'] = $exists_fields;
+			} else {
+				$this->option_configs[ $tab_id ] = array(
+					'id' => $tab_id,
+					'fields' => array(
+						$field,
+					),
 				);
 			}
 		}
@@ -444,7 +555,56 @@ class Started_Plugin_Setting {
 		}
 	}
 
+	/**
+	 * Add metabox configs
+	 *
+	 * @param [array] $args
+	 * @param [array] $fields
+	 * @return void
+	 */
+	public function add_meta_box( $args, $fields ) {
+		$this->metabox_configs[] = array(
+			'args' => $args,
+			'fields' => $fields,
+		);
+	}
 
+	/**
+	 * Add metabox config with fields defined in a file
+	 *
+	 * @param [array]  $args
+	 * @param [string] $file_dir
+	 * @return void
+	 */
+	public function add_meta_box_file( $args, $file_dir ) {
+		$file_configs = apply_filters( 'started_plugin_add_meta_box_file', $file_dir, $args );
+		if ( file_exists( $file_configs ) || file_exists( STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/' . $file_configs ) ) {
+			$file_config_dir = $file_configs;
+			if ( ! file_exists( $file_config_dir ) ) {
+				$file_config_dir = STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/' . $file_configs;
+			}
+			$configs = include $file_config_dir;
+			if ( is_array( $args ) && ! empty( $args ) && is_array( $configs ) && ! empty( $configs ) ) {
+				$this->add_meta_box( $args, $configs );
+			}
+		}
+	}
+
+	/**
+	 * Get metabox value
+	 *
+	 * @param string  $meta_key
+	 * @param integer $post_id
+	 * @param string  $default_value
+	 * @return mixed  Meta value or default value
+	 */
+	public function get_post_meta( $meta_key = '', $post_id = 0, $default_value = '' ) {
+		$post_meta = get_post_meta( $this->metabox_prefix . $meta_key, $post_id, true );
+		if ( ! empty( $post_meta ) ) {
+			return $post_meta;
+		}
+		return $default_value;
+	}
 }
 
 function started_plugin_settings() {
@@ -454,3 +614,4 @@ function started_plugin_settings() {
 if ( file_exists( STARTED_PLUGIN_DIR . 'inc/admin/setting-configs.php' ) ) {
 	require_once STARTED_PLUGIN_DIR . 'inc/admin/setting-configs.php';
 }
+

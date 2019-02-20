@@ -25,7 +25,7 @@
     "load-grunt-tasks": "^4.0.0"
   },
   "dependencies": {
-    "autoprefixer": "^9.4.7",
+    "autoprefixer": "^9.4.8",
     "postcss-cli": "^6.1.1"
   }
 }
