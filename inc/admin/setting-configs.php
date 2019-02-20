@@ -429,6 +429,48 @@ $started_plugin_setting->set_tab_field(
 		'after_row'    => '<p>Testing <b>"after_row"</b> parameter</p>',
 	)
 );
+$started_plugin_setting->set_tab_field(
+	'general_settings',
+	array(
+		'id'          => 'general_group_fields',
+		'type'        => 'group',
+		'name'         => 'Group Fields',
+		'description' => esc_html__( 'Generates reusable form entries', 'cmb2' ),
+		'options'     => array(
+			'group_title'    => esc_html__( 'Entry {#}', 'cmb2' ), // {#} gets replaced by row number
+			'add_button'     => esc_html__( 'Add Another Entry', 'cmb2' ),
+			'remove_button'  => esc_html__( 'Remove Entry', 'cmb2' ),
+			'sortable'       => true,
+			// 'closed'      => true, // true to have the groups closed by default
+			// 'remove_confirm' => esc_html__( 'Are you sure you want to remove?', 'cmb2' ), // Performs confirmation before removing group.
+		),
+		'fields' => array(
+			array(
+				'name'       => esc_html__( 'Entry Title', 'cmb2' ),
+				'id'         => 'title',
+				'type'       => 'text',
+				// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+			),
+			array(
+				'name'        => esc_html__( 'Description', 'cmb2' ),
+				'description' => esc_html__( 'Write a short description for this entry', 'cmb2' ),
+				'id'          => 'description',
+				'type'        => 'textarea_small',
+			),
+			array(
+				'name' => esc_html__( 'Entry Image', 'cmb2' ),
+				'id'   => 'image',
+				'type' => 'file',
+			),
+			array(
+				'name' => esc_html__( 'Image Caption', 'cmb2' ),
+				'id'   => 'image_caption',
+				'type' => 'text',
+			),
+		),
+	)
+);
+
 
 $started_plugin_setting->set_tab_file_configs( 'general_settings', STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/general.php' );
 
