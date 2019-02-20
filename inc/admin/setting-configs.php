@@ -606,6 +606,43 @@ $metabox_fields = array(
 		'id'   => 'textmedium',
 		'type' => 'text_medium',
 	),
+	array(
+		'id'          => 'group_fields',
+		'type'        => 'group',
+		'description' => esc_html__( 'Generates reusable form entries', 'cmb2' ),
+		'options'     => array(
+			'group_title'    => esc_html__( 'Entry {#}', 'cmb2' ), // {#} gets replaced by row number
+			'add_button'     => esc_html__( 'Add Another Entry', 'cmb2' ),
+			'remove_button'  => esc_html__( 'Remove Entry', 'cmb2' ),
+			'sortable'       => true,
+			// 'closed'      => true, // true to have the groups closed by default
+			// 'remove_confirm' => esc_html__( 'Are you sure you want to remove?', 'cmb2' ), // Performs confirmation before removing group.
+		),
+		'fields' => array(
+			array(
+				'name'       => esc_html__( 'Entry Title', 'cmb2' ),
+				'id'         => 'title',
+				'type'       => 'text',
+				// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+			),
+			array(
+				'name'        => esc_html__( 'Description', 'cmb2' ),
+				'description' => esc_html__( 'Write a short description for this entry', 'cmb2' ),
+				'id'          => 'description',
+				'type'        => 'textarea_small',
+			),
+			array(
+				'name' => esc_html__( 'Entry Image', 'cmb2' ),
+				'id'   => 'image',
+				'type' => 'file',
+			),
+			array(
+				'name' => esc_html__( 'Image Caption', 'cmb2' ),
+				'id'   => 'image_caption',
+				'type' => 'text',
+			),
+		),
+	),
 );
 $started_plugin_setting->add_meta_box( $metabox_args, $metabox_fields );
 
@@ -690,6 +727,43 @@ $started_plugin_setting->set_setting_fields(
 			'desc' => esc_html__( 'field description (optional)', 'cmb2' ),
 			'id'   => 'notab_2_textmedium',
 			'type' => 'text_medium',
+		),
+		array(
+			'id'          => 'group_fields',
+			'type'        => 'group',
+			'description' => esc_html__( 'Generates reusable form entries', 'cmb2' ),
+			'options'     => array(
+				'group_title'    => esc_html__( 'Entry {#}', 'cmb2' ), // {#} gets replaced by row number
+				'add_button'     => esc_html__( 'Add Another Entry', 'cmb2' ),
+				'remove_button'  => esc_html__( 'Remove Entry', 'cmb2' ),
+				'sortable'       => true,
+				// 'closed'      => true, // true to have the groups closed by default
+				// 'remove_confirm' => esc_html__( 'Are you sure you want to remove?', 'cmb2' ), // Performs confirmation before removing group.
+			),
+			'fields' => array(
+				array(
+					'name'       => esc_html__( 'Entry Title', 'cmb2' ),
+					'id'         => 'title',
+					'type'       => 'text',
+					// 'repeatable' => true, // Repeatable fields are supported w/in repeatable groups (for most types)
+				),
+				array(
+					'name'        => esc_html__( 'Description', 'cmb2' ),
+					'description' => esc_html__( 'Write a short description for this entry', 'cmb2' ),
+					'id'          => 'description',
+					'type'        => 'textarea_small',
+				),
+				array(
+					'name' => esc_html__( 'Entry Image', 'cmb2' ),
+					'id'   => 'image',
+					'type' => 'file',
+				),
+				array(
+					'name' => esc_html__( 'Image Caption', 'cmb2' ),
+					'id'   => 'image_caption',
+					'type' => 'text',
+				),
+			),
 		),
 	)
 );

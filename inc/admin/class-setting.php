@@ -107,7 +107,15 @@ class Started_Plugin_Setting {
 	 */
 	public function register_db_settings() {
 		register_setting( $this->option_key, $this->option_key );
+		$this->init_meta_box();
+	}
 
+	/**
+	 * Init meta box
+	 *
+	 * @return void
+	 */
+	public function init_meta_box() {
 		if ( is_array( $this->metabox_configs ) && ! empty( $this->metabox_configs ) ) {
 			$metabox_configs = apply_filters( 'started_plugin_register_metabox', $this->metabox_configs );
 			foreach ( $metabox_configs as $config ) {
@@ -210,10 +218,21 @@ class Started_Plugin_Setting {
 		}
 	}
 
+	/**
+	 * Add setting page
+	 *
+	 * @param [array] $args
+	 * @return void
+	 */
 	public function add_settings_page( $args ) {
 		$this->menu_pages[] = $args;
 	}
 
+	/**
+	 * Render tabs
+	 *
+	 * @return void
+	 */
 	public function render_tabs() {
 		$current_tab = $this->current_tab;
 		if ( is_array( $this->tabs ) && ! empty( $this->tabs ) ) {
@@ -239,6 +258,11 @@ class Started_Plugin_Setting {
 		}
 	}
 
+	/**
+	 * Render sub tab
+	 *
+	 * @return void
+	 */
 	public function render_sub_tab() {
 		$all_tabs = $this->tabs;
 		$current_tab = $this->current_tab;
@@ -276,7 +300,11 @@ class Started_Plugin_Setting {
 			<?php
 		}
 	}
-
+	/**
+	 * Check target page
+	 *
+	 * @return boolean
+	 */
 	public function check_target_page() {
 		$all_tabs = $this->tabs;
 		$current_page_slug = $this->current_page_slug;
@@ -289,6 +317,11 @@ class Started_Plugin_Setting {
 		return true;
 	}
 
+	/**
+	 * Render form content
+	 *
+	 * @return void
+	 */
 	public function render_form_content() {
 		$target_page = $this->check_target_page();
 		if ( ! $target_page ) {
@@ -304,7 +337,11 @@ class Started_Plugin_Setting {
 		</div>
 		<?php
 	}
-
+	/**
+	 * Render form content with no tab
+	 *
+	 * @return void
+	 */
 	public function render_form_notab_content() {
 		$setting_fields = $this->setting_fields[ $this->current_page_slug ]['fields'];
 		$setting_fields = apply_filters( 'started_plugin_form_notab_fields', $setting_fields, $this->setting_fields, $this->current_page_slug );
@@ -468,7 +505,13 @@ class Started_Plugin_Setting {
 			}
 		}
 	}
-
+	/**
+	 * Add setting to page without tab
+	 *
+	 * @param [string] $menu_slug
+	 * @param [array]  $fields
+	 * @return void
+	 */
 	public function set_setting_fields( $menu_slug, $fields ) {
 		if ( '' !== $menu_slug && is_array( $fields ) && ! empty( $fields ) ) {
 			$fields = apply_filters( 'started_plugin_set_setting_fields', $fields, $menu_slug );
@@ -482,7 +525,13 @@ class Started_Plugin_Setting {
 			}
 		}
 	}
-
+	/**
+	 * Add setting to page without tab via file
+	 *
+	 * @param [string] $menu_slug
+	 * @param [array]  $file_configs
+	 * @return void
+	 */
 	public function set_setting_file_configs( $menu_slug, $file_configs ) {
 		$file_configs = apply_filters( 'started_plugin_set_setting_file_configs', $file_configs, $menu_slug );
 		if ( file_exists( $file_configs ) || file_exists( STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/' . $file_configs ) ) {
@@ -497,7 +546,13 @@ class Started_Plugin_Setting {
 			}
 		}
 	}
-
+	/**
+	 * Add setting to page with one file each call
+	 *
+	 * @param [string] $menu_slug
+	 * @param [array] $field
+	 * @return void
+	 */
 	public function set_setting_field( $menu_slug, $field ) {
 		if ( '' !== $menu_slug && is_array( $field ) && ! empty( $field ) ) {
 			$fields = apply_filters( 'started_plugin_set_setting_field', $field, $menu_slug );
@@ -515,7 +570,13 @@ class Started_Plugin_Setting {
 			}
 		}
 	}
-
+	/**
+	 * Set tab field
+	 *
+	 * @param [string] $tab_id
+	 * @param [array]  $field
+	 * @return void
+	 */
 	public function set_tab_field( $tab_id, $field ) {
 		if ( '' !== $tab_id && is_array( $field ) && ! empty( $field ) ) {
 			$fields = apply_filters( 'started_plugin_set_tab_field', $field, $tab_id );
