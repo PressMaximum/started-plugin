@@ -330,9 +330,40 @@ class Started_Plugin_Setting {
 	 * Render setting page content
 	 */
 	public function page_content() {
+		/**
+		 * Hook started_plugin_before_page_setting_content
+		 *
+		 * @since 0.1.0
+		 */
+		do_action( 'started_plugin_before_page_setting_content' );
 		?>
 		<div class="wrap">
+			<?php
+				/**
+				 * Hook started_plugin_page_setting_before_title
+				 *
+				 * @since 0.1.0
+				 */
+				do_action( 'started_plugin_page_setting_before_title' );
+			?>
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+			<?php
+				/**
+				 * Hook started_plugin_page_setting_after_title
+				 *
+				 * @since 0.1.0
+				 */
+				do_action( 'started_plugin_page_setting_after_title' );
+			?>
+
+			<?php
+				/**
+				 * Hook started_plugin_page_setting_before_form_content
+				 *
+				 * @since 0.1.0
+				 */
+				do_action( 'started_plugin_page_setting_before_form_content' );
+			?>
 			<?php
 			if ( array_key_exists( $this->current_page_slug, $this->setting_fields ) ) {
 				$this->render_form_notab_content();
@@ -340,9 +371,23 @@ class Started_Plugin_Setting {
 				$this->render_form_content();
 			}
 			?>
+			<?php
+				/**
+				 * Hook started_plugin_page_setting_after_form_content
+				 *
+				 * @since 0.1.0
+				 */
+				do_action( 'started_plugin_page_setting_after_form_content' );
+			?>
 			<div class="clear"></div>
 		</div>
 		<?php
+		/**
+		 * Hook started_plugin_after_page_setting_content
+		 *
+		 * @since 0.1.0
+		 */
+		do_action( 'started_plugin_after_page_setting_content' );
 	}
 
 	/**
@@ -425,10 +470,50 @@ class Started_Plugin_Setting {
 	}
 
 	public function set_setting_fields( $menu_slug, $fields ) {
-		$this->setting_fields[ $menu_slug ] = array(
-			'menu_slug' => $menu_slug,
-			'fields'    => $fields,
-		);
+		if ( '' !== $menu_slug && is_array( $fields ) && ! empty( $fields ) ) {
+			$fields = apply_filters( 'started_plugin_set_setting_fields', $fields, $menu_slug );
+			if ( isset( $this->setting_fields[ $menu_slug ] ) && isset( $this->setting_fields[ $menu_slug ]['fields'] ) ) {
+				$this->setting_fields[ $menu_slug ]['fields'] = array_merge( $this->setting_fields[ $menu_slug ]['fields'], $fields );
+			} else {
+				$this->setting_fields[ $menu_slug ] = array(
+					'menu_slug' => $menu_slug,
+					'fields'    => $fields,
+				);
+			}
+		}
+	}
+
+	public function set_setting_file_configs( $menu_slug, $file_configs ) {
+		$file_configs = apply_filters( 'started_plugin_set_setting_file_configs', $file_configs, $menu_slug );
+		if ( file_exists( $file_configs ) || file_exists( STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/' . $file_configs ) ) {
+			$file_config_dir = $file_configs;
+			if ( ! file_exists( $file_config_dir ) ) {
+				$file_config_dir = STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/' . $file_configs;
+
+			}
+			$configs = include $file_config_dir;
+			if ( '' !== $menu_slug && is_array( $configs ) && ! empty( $configs ) ) {
+				$this->set_setting_fields( $menu_slug, $configs );
+			}
+		}
+	}
+
+	public function set_setting_field( $menu_slug, $field ) {
+		if ( '' !== $menu_slug && is_array( $field ) && ! empty( $field ) ) {
+			$fields = apply_filters( 'started_plugin_set_setting_field', $field, $menu_slug );
+			if ( isset( $this->setting_fields[ $menu_slug ] ) && isset( $this->setting_fields[ $menu_slug ]['fields'] ) ) {
+				$exists_fields = $this->setting_fields[ $menu_slug ]['fields'];
+				$exists_fields[] = $field;
+				$this->setting_fields[ $menu_slug ]['fields'] = $exists_fields;
+			} else {
+				$this->setting_fields[ $menu_slug ] = array(
+					'menu_slug' => $menu_slug,
+					'fields' => array(
+						$field,
+					),
+				);
+			}
+		}
 	}
 
 	public function set_tab_field( $tab_id, $field ) {

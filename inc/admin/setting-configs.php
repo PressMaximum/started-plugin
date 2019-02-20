@@ -4,8 +4,8 @@ $started_plugin_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-page',
 		'parent_slug' => null,
-		'page_title' => esc_html__( 'Page Settings', 'started-plugin' ),
-		'menu_title' => esc_html__( 'Started Page', 'started-plugin' ),
+		'page_title' => esc_html__( 'Page Settings With Tab', 'started-plugin' ),
+		'menu_title' => esc_html__( 'Settings', 'started-plugin' ),
 	)
 );
 
@@ -13,8 +13,8 @@ $started_plugin_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-01',
 		'parent_slug' => 'started-plugin-page',
-		'page_title' => esc_html__( 'Page 01', 'started-plugin' ),
-		'menu_title' => esc_html__( 'Started Page 01', 'started-plugin' ),
+		'page_title' => esc_html__( 'Page Settings With Tab 02', 'started-plugin' ),
+		'menu_title' => esc_html__( 'Settings 02', 'started-plugin' ),
 	)
 );
 
@@ -22,8 +22,17 @@ $started_plugin_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-02',
 		'parent_slug' => 'started-plugin-page',
-		'page_title' => esc_html__( 'Page 02', 'started-plugin' ),
-		'menu_title' => esc_html__( 'Started Page 02', 'started-plugin' ),
+		'page_title' => esc_html__( 'Setting With No Tab', 'started-plugin' ),
+		'menu_title' => esc_html__( 'No Tab', 'started-plugin' ),
+	)
+);
+
+$started_plugin_setting->add_settings_page(
+	array(
+		'menu_slug' => 'started-plugin-03',
+		'parent_slug' => 'started-plugin-page',
+		'page_title' => esc_html__( 'Setting With No Tab 02', 'started-plugin' ),
+		'menu_title' => esc_html__( 'No Tab 02', 'started-plugin' ),
 	)
 );
 
@@ -531,7 +540,6 @@ $started_plugin_setting->set_sub_tab_fields(
 
 $started_plugin_setting->register_tab( 'general_settings2', esc_html__( 'General 2', 'started-plugin' ), 'started-plugin-01' );
 $started_plugin_setting->register_tab( 'products_settings2', esc_html__( 'Products 2', 'started-plugin' ), 'started-plugin-01' );
-$started_plugin_setting->register_tab( 'shipping_settings2', esc_html__( 'Shipping 2', 'started-plugin' ), 'started-plugin-01' );
 
 $started_plugin_setting->set_tab_fields(
 	'general_settings2',
@@ -621,6 +629,66 @@ $started_plugin_setting->set_setting_fields(
 			'name' => esc_html__( 'Test Text Medium', 'cmb2' ),
 			'desc' => esc_html__( 'field description (optional)', 'cmb2' ),
 			'id'   => 'notab_textmedium',
+			'type' => 'text_medium',
+		),
+	)
+);
+
+$started_plugin_setting->set_setting_fields(
+	'started-plugin-02',
+	array(
+		array(
+			'name'       => esc_html__( 'Test Text 2', 'cmb2' ),
+			'desc'       => esc_html__( 'field description (optional)', 'cmb2' ),
+			'id'         => 'notab_text2',
+			'type'       => 'text',
+		),
+		array(
+			'name' => esc_html__( 'Test Text Medium 2', 'cmb2' ),
+			'desc' => esc_html__( 'field description (optional)', 'cmb2' ),
+			'id'   => 'notab_textmedium2',
+			'type' => 'text_medium',
+		),
+	)
+);
+$started_plugin_setting->set_setting_field(
+	'started-plugin-02',
+	array(
+		'name'       => esc_html__( 'Test Text 3', 'cmb2' ),
+		'desc'       => esc_html__( 'field description (optional)', 'cmb2' ),
+		'id'         => 'notab_text3',
+		'type'       => 'text',
+	)
+);
+$started_plugin_setting->set_setting_field(
+	'started-plugin-02',
+	array(
+		'name' => esc_html__( 'Test Text Medium 3', 'cmb2' ),
+		'desc' => esc_html__( 'field description (optional)', 'cmb2' ),
+		'id'   => 'notab_textmedium3',
+		'type' => 'text_medium',
+	)
+);
+
+$started_plugin_setting->set_setting_file_configs(
+	'started-plugin-02',
+	STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/setting-no-tab.php'
+);
+
+
+$started_plugin_setting->set_setting_fields(
+	'started-plugin-03',
+	array(
+		array(
+			'name'       => esc_html__( 'Test Text', 'cmb2' ),
+			'desc'       => esc_html__( 'field description (optional)', 'cmb2' ),
+			'id'         => 'notab_2_text',
+			'type'       => 'text',
+		),
+		array(
+			'name' => esc_html__( 'Test Text Medium', 'cmb2' ),
+			'desc' => esc_html__( 'field description (optional)', 'cmb2' ),
+			'id'   => 'notab_2_textmedium',
 			'type' => 'text_medium',
 		),
 	)
