@@ -1,15 +1,14 @@
 <?php
-$started_plugin_setting = started_plugin_settings();
-$started_plugin_setting->add_settings_page(
+/** TEST ALL CONFIGS */
+$press_search_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-page',
 		'parent_slug' => null,
 		'page_title' => esc_html__( 'Page Settings With Tab', 'started-plugin' ),
-		'menu_title' => esc_html__( 'Settings', 'started-plugin' ),
+		'menu_title' => esc_html__( 'Other Settings', 'started-plugin' ),
 	)
 );
-
-$started_plugin_setting->add_settings_page(
+$press_search_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-01',
 		'parent_slug' => 'started-plugin-page',
@@ -17,8 +16,7 @@ $started_plugin_setting->add_settings_page(
 		'menu_title' => esc_html__( 'Settings 02', 'started-plugin' ),
 	)
 );
-
-$started_plugin_setting->add_settings_page(
+$press_search_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-02',
 		'parent_slug' => 'started-plugin-page',
@@ -26,8 +24,7 @@ $started_plugin_setting->add_settings_page(
 		'menu_title' => esc_html__( 'No Tab', 'started-plugin' ),
 	)
 );
-
-$started_plugin_setting->add_settings_page(
+$press_search_setting->add_settings_page(
 	array(
 		'menu_slug' => 'started-plugin-03',
 		'parent_slug' => 'started-plugin-page',
@@ -36,19 +33,18 @@ $started_plugin_setting->add_settings_page(
 	)
 );
 
-$started_plugin_setting->register_tab( 'general_settings', esc_html__( 'General', 'started-plugin' ), 'started-plugin-page' );
-$started_plugin_setting->register_tab( 'products_settings', esc_html__( 'Products', 'started-plugin' ), 'started-plugin-page' );
-$started_plugin_setting->register_tab( 'shipping_settings', esc_html__( 'Shipping', 'started-plugin' ), 'started-plugin-page' );
 
-$started_plugin_setting->register_sub_tab( 'products_settings_general', 'products_settings', esc_html__( 'General', 'started-plugin' ) );
-$started_plugin_setting->register_sub_tab( 'products_settings_inventory', 'products_settings', esc_html__( 'Inventory', 'started-plugin' ) );
-$started_plugin_setting->register_sub_tab( 'products_settings_downloadable', 'products_settings', esc_html__( 'Downloadable products', 'started-plugin' ) );
+$press_search_setting->register_tab( 'started-plugin-page', 'general_settings', esc_html__( 'General', 'started-plugin' ) );
+$press_search_setting->register_tab( 'started-plugin-page', 'products_settings', esc_html__( 'Products', 'started-plugin' ) );
+$press_search_setting->register_tab( 'started-plugin-page', 'shipping_settings', esc_html__( 'Shipping', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'products_settings', 'products_settings_general', esc_html__( 'General', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'products_settings', 'products_settings_inventory', esc_html__( 'Inventory', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'products_settings', 'products_settings_downloadable', esc_html__( 'Downloadable products', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'shipping_settings', 'shipping_settings_zones', esc_html__( 'Shipping zones', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'shipping_settings', 'shipping_settings_options', esc_html__( 'Shipping options', 'started-plugin' ) );
+$press_search_setting->register_sub_tab( 'shipping_settings', 'shipping_settings_classes', esc_html__( 'Shipping classes', 'started-plugin' ) );
 
-$started_plugin_setting->register_sub_tab( 'shipping_settings_zones', 'shipping_settings', esc_html__( 'Shipping zones', 'started-plugin' ) );
-$started_plugin_setting->register_sub_tab( 'shipping_settings_options', 'shipping_settings', esc_html__( 'Shipping options', 'started-plugin' ) );
-$started_plugin_setting->register_sub_tab( 'shipping_settings_classes', 'shipping_settings', esc_html__( 'Shipping classes', 'started-plugin' ) );
-
-$started_plugin_setting->set_tab_fields(
+$press_search_setting->set_tab_fields(
 	'general_settings',
 	array(
 		array(
@@ -110,7 +106,8 @@ $started_plugin_setting->set_tab_fields(
 	)
 );
 
-$started_plugin_setting->set_tab_field(
+
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Website URL', 'cmb2' ),
@@ -121,7 +118,7 @@ $started_plugin_setting->set_tab_field(
 	// 'repeatable' => true,
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Text Email', 'cmb2' ),
@@ -130,7 +127,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'text_email',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Text Email - Repeatable', 'cmb2' ),
@@ -140,7 +137,7 @@ $started_plugin_setting->set_tab_field(
 		'repeatable' => true,
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Time', 'cmb2' ),
@@ -150,7 +147,7 @@ $started_plugin_setting->set_tab_field(
 	// 'time_format' => 'H:i', // Set to 24hr format
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Time zone', 'cmb2' ),
@@ -159,7 +156,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'select_timezone',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Date Picker', 'cmb2' ),
@@ -169,7 +166,7 @@ $started_plugin_setting->set_tab_field(
 	// 'date_format' => 'Y-m-d',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Date Picker (UNIX timestamp)', 'cmb2' ),
@@ -179,7 +176,7 @@ $started_plugin_setting->set_tab_field(
 	// 'timezone_meta_key' =>  'timezone', // Optionally make this field honor the timezone selected in the select_timezone specified above
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Date/Time Picker Combo (UNIX timestamp)', 'cmb2' ),
@@ -188,8 +185,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'text_datetime_timestamp',
 	)
 );
-
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Money', 'cmb2' ),
@@ -200,7 +196,7 @@ $started_plugin_setting->set_tab_field(
 	// 'repeatable' => true,
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'    => esc_html__( 'Test Color Picker', 'cmb2' ),
@@ -218,7 +214,7 @@ $started_plugin_setting->set_tab_field(
 	// ),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Text Area', 'cmb2' ),
@@ -227,7 +223,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'textarea',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Text Area Small', 'cmb2' ),
@@ -236,7 +232,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'textarea_small',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Text Area for Code', 'cmb2' ),
@@ -256,7 +252,7 @@ $started_plugin_setting->set_tab_field(
 	// 'options' => array( 'disable_codemirror' => true ),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Title Weeeee', 'cmb2' ),
@@ -265,7 +261,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'title',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'             => esc_html__( 'Test Select', 'cmb2' ),
@@ -280,7 +276,7 @@ $started_plugin_setting->set_tab_field(
 		),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'             => esc_html__( 'Test Radio inline', 'cmb2' ),
@@ -295,7 +291,7 @@ $started_plugin_setting->set_tab_field(
 		),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'    => esc_html__( 'Test Radio', 'cmb2' ),
@@ -309,7 +305,7 @@ $started_plugin_setting->set_tab_field(
 		),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'     => esc_html__( 'Test Taxonomy Radio', 'cmb2' ),
@@ -325,7 +321,7 @@ $started_plugin_setting->set_tab_field(
 		),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'     => esc_html__( 'Test Taxonomy Select', 'cmb2' ),
@@ -335,7 +331,7 @@ $started_plugin_setting->set_tab_field(
 		'taxonomy' => 'category', // Taxonomy Slug
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'     => esc_html__( 'Test Taxonomy Multi Checkbox', 'cmb2' ),
@@ -346,7 +342,7 @@ $started_plugin_setting->set_tab_field(
 	// 'inline'  => true, // Toggles display to inline
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Checkbox', 'cmb2' ),
@@ -355,7 +351,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'checkbox',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'    => esc_html__( 'Test Multi Checkbox', 'cmb2' ),
@@ -371,7 +367,7 @@ $started_plugin_setting->set_tab_field(
 		// 'inline'  => true, // Toggles display to inline
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'    => esc_html__( 'Test wysiwyg', 'cmb2' ),
@@ -383,7 +379,7 @@ $started_plugin_setting->set_tab_field(
 		),
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'Test Image', 'cmb2' ),
@@ -392,7 +388,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'file',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'         => esc_html__( 'Multiple Files', 'cmb2' ),
@@ -402,7 +398,7 @@ $started_plugin_setting->set_tab_field(
 		'preview_size' => array( 100, 100 ), // Default: array( 50, 50 )
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name' => esc_html__( 'oEmbed', 'cmb2' ),
@@ -415,7 +411,7 @@ $started_plugin_setting->set_tab_field(
 		'type' => 'oembed',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'name'         => 'Testing Field Parameters',
@@ -429,7 +425,7 @@ $started_plugin_setting->set_tab_field(
 		'after_row'    => '<p>Testing <b>"after_row"</b> parameter</p>',
 	)
 );
-$started_plugin_setting->set_tab_field(
+$press_search_setting->set_tab_field(
 	'general_settings',
 	array(
 		'id'          => 'general_group_fields',
@@ -471,12 +467,10 @@ $started_plugin_setting->set_tab_field(
 	)
 );
 
-
-$started_plugin_setting->set_tab_file_configs( 'general_settings', STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/general.php' );
-
-$started_plugin_setting->set_sub_tab_fields(
-	'products_settings_general',
+$press_search_setting->set_tab_file_configs( 'general_settings', PRESS_SEARCH_DIR . 'inc/admin/setting-configs/general.php' );
+$press_search_setting->set_sub_tab_fields(
 	'products_settings',
+	'products_settings_general',
 	array(
 		array(
 			'name'    => esc_html__( 'Product Site Background Color', 'cmb2' ),
@@ -498,10 +492,9 @@ $started_plugin_setting->set_sub_tab_fields(
 		),
 	)
 );
-
-$started_plugin_setting->set_sub_tab_fields(
-	'products_settings_inventory',
+$press_search_setting->set_sub_tab_fields(
 	'products_settings',
+	'products_settings_inventory',
 	array(
 		array(
 			'name'    => esc_html__( 'Product Site Background Color 2', 'cmb2' ),
@@ -523,16 +516,14 @@ $started_plugin_setting->set_sub_tab_fields(
 		),
 	)
 );
-
-$started_plugin_setting->set_sub_tab_file_configs(
-	'products_settings_inventory',
+$press_search_setting->set_sub_tab_file_configs(
 	'products_settings',
-	STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/products-settings-inventory.php'
+	'products_settings_inventory',
+	PRESS_SEARCH_DIR . 'inc/admin/setting-configs/products-settings-inventory.php'
 );
-
-$started_plugin_setting->set_sub_tab_fields(
-	'shipping_settings_zones',
+$press_search_setting->set_sub_tab_fields(
 	'shipping_settings',
+	'shipping_settings_zones',
 	array(
 		array(
 			'name'    => esc_html__( 'Product Site Background Color', 'cmb2' ),
@@ -555,9 +546,9 @@ $started_plugin_setting->set_sub_tab_fields(
 	)
 );
 
-$started_plugin_setting->set_sub_tab_fields(
-	'shipping_settings_options',
+$press_search_setting->set_sub_tab_fields(
 	'shipping_settings',
+	'shipping_settings_options',
 	array(
 		array(
 			'name'    => esc_html__( 'Product Site Background Color 2', 'cmb2' ),
@@ -580,55 +571,6 @@ $started_plugin_setting->set_sub_tab_fields(
 	)
 );
 
-$started_plugin_setting->register_tab( 'general_settings2', esc_html__( 'General 2', 'started-plugin' ), 'started-plugin-01' );
-$started_plugin_setting->register_tab( 'products_settings2', esc_html__( 'Products 2', 'started-plugin' ), 'started-plugin-01' );
-
-$started_plugin_setting->set_tab_fields(
-	'general_settings2',
-	array(
-		array(
-			'name'    => esc_html__( 'General 2 BG Color', 'cmb2' ),
-			'desc'    => esc_html__( 'field description (optional)', 'cmb2' ),
-			'id'      => 'general_2_bg_color',
-			'type'    => 'colorpicker',
-			'default' => '#ffffff',
-		),
-		array(
-			'name'    => 'General 2  Test Radio',
-			'desc'    => 'field description (optional)',
-			'id'      => 'general_2_radio',
-			'type'    => 'radio',
-			'options' => array(
-				'option1' => 'Option One',
-				'option2' => 'Option Two',
-				'option3' => 'Option Three',
-			),
-		),
-	)
-);
-$started_plugin_setting->set_tab_fields(
-	'products_settings2',
-	array(
-		array(
-			'name'    => esc_html__( 'Product 2 BG Color', 'cmb2' ),
-			'desc'    => esc_html__( 'field description (optional)', 'cmb2' ),
-			'id'      => 'product_2_bg_color',
-			'type'    => 'colorpicker',
-			'default' => '#ffffff',
-		),
-		array(
-			'name'    => 'Product 2  Test Radio',
-			'desc'    => 'field description (optional)',
-			'id'      => 'product_2_radio',
-			'type'    => 'radio',
-			'options' => array(
-				'option1' => 'Option One',
-				'option2' => 'Option Two',
-				'option3' => 'Option Three',
-			),
-		),
-	)
-);
 
 $metabox_args = array(
 	'id'            => 'metabox',
@@ -686,16 +628,14 @@ $metabox_fields = array(
 		),
 	),
 );
-$started_plugin_setting->add_meta_box( $metabox_args, $metabox_fields );
-
+$press_search_setting->add_meta_box( $metabox_args, $metabox_fields );
 $metabox_args2 = array(
 	'id'            => 'metabox2',
 	'title'         => esc_html__( 'Metabo 02', 'started-plugin' ),
 	'object_types'  => array( 'page' ),
 );
-$started_plugin_setting->add_meta_box_file( $metabox_args2, STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/metabox.php' );
-
-$started_plugin_setting->set_setting_fields(
+$press_search_setting->add_meta_box_file( $metabox_args2, PRESS_SEARCH_DIR . 'inc/admin/setting-configs/metabox.php' );
+$press_search_setting->set_setting_fields(
 	'started-plugin-02',
 	array(
 		array(
@@ -712,8 +652,7 @@ $started_plugin_setting->set_setting_fields(
 		),
 	)
 );
-
-$started_plugin_setting->set_setting_fields(
+$press_search_setting->set_setting_fields(
 	'started-plugin-02',
 	array(
 		array(
@@ -730,7 +669,7 @@ $started_plugin_setting->set_setting_fields(
 		),
 	)
 );
-$started_plugin_setting->set_setting_field(
+$press_search_setting->set_setting_field(
 	'started-plugin-02',
 	array(
 		'name'       => esc_html__( 'Test Text 3', 'cmb2' ),
@@ -739,7 +678,7 @@ $started_plugin_setting->set_setting_field(
 		'type'       => 'text',
 	)
 );
-$started_plugin_setting->set_setting_field(
+$press_search_setting->set_setting_field(
 	'started-plugin-02',
 	array(
 		'name' => esc_html__( 'Test Text Medium 3', 'cmb2' ),
@@ -748,14 +687,11 @@ $started_plugin_setting->set_setting_field(
 		'type' => 'text_medium',
 	)
 );
-
-$started_plugin_setting->set_setting_file_configs(
+$press_search_setting->set_setting_file_configs(
 	'started-plugin-02',
-	STARTED_PLUGIN_DIR . 'inc/admin/setting-configs/setting-no-tab.php'
+	PRESS_SEARCH_DIR . 'inc/admin/setting-configs/setting-no-tab.php'
 );
-
-
-$started_plugin_setting->set_setting_fields(
+$press_search_setting->set_setting_fields(
 	'started-plugin-03',
 	array(
 		array(
